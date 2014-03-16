@@ -71,10 +71,10 @@
 						dest = '';
 						//Parse json dictionary
 						$.each(data.basic.explains, function(i, item) {
-							dest += item;
+							dest += item + "<br />";
 						});
 
-						$('#translate' + (flag + i + 1)).text(dest);
+						$('#translate' + (flag + i + 1)).html(dest);
 					});
 				});
 				
