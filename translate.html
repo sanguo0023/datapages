@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en"><head>
-<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<html lang="en">
+<head>
     <meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="description" content="公益数据项目">
 	<meta name="author" content="Yufei-Li">
-    <link rel="stylesheet" href="./stylesheets/bootstrap.css">
+    <link rel="stylesheet" href="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/css/bootstrap.min.css">
     <title>公益数据项目--译者工具</title>
 		 
 </head>
@@ -21,15 +21,16 @@
 		<div class="panel-body">
 			<!--button id="download_xls" class="btn btn-primary">下载表格</button-->
 			<!--button id="download_json" class="btn btn-primary">下载结构化数据</button-->
+			<p><small>使用<a href="http://fanyi.youdao.com"><strong>有道翻译</strong></a>api</small></p>
 		</div>
 	</div>
 
 	<table id="table" class="table">
 	<thead>
-		<tr><th>id</th>
+		<th>id</th>
 		<th>word</th>
 		<th>translate</th>
-	</tr></thead>
+	</thead>
 	<tbody id="src">
 
 	</tbody>
@@ -38,19 +39,19 @@
 	<button id="add" class="btn btn-primary">Add</button>
 	<button id="submit" class="btn btn-success">Submit</button>
 	<button id="print" class="btn">Print</button>
-	<button style="display: none;" id="ok" class="btn btn-primary" type="hidden">OK</button>
+	<button id="ok" class="btn btn-primary" type="hidden">OK</button>
 </div>
 
 
 
 	<!--Javascript代码引入-->
-	<script src="./javascripts/jquery.js"></script>
-	<script src="./javascripts/bootstrap.js"></script>
+	<script src="http://cdn.bootcss.com/jquery/1.10.2/jquery.min.js"></script>
+	<script src="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/js/bootstrap.min.js"></script>
 
     
 	<script type="text/javascript">
 		$(document).ready( function() {
-			count = 1;
+			count = 1; //The number of all words
 			flag = 0;	
 
 			//Init table
@@ -65,21 +66,18 @@
 
 			//Translation!!
 			$('#submit').click( function() {
-				src = "";
+				$('td input').each( function(i) {
+					$.getJSON("http://fanyi.youdao.com/openapi.do?keyfrom=translate-for-one&key=842058211&type=data&doctype=jsonp&version=1.1&q=" + $(this).val() + "&callback=?", function(data) {
+						dest = '';
+						//Parse json dictionary
+						$.each(data.basic.explains, function(i, item) {
+							dest += item;
+						});
 
-				$('td input').each( function() {
-					if ($(this).val() != "")
-						src = src + $(this).val() + "%0A";
-					else
-						src = src + "null" + "%0A";
-				});
-				
-				$.getJSON("http://openapi.baidu.com/public/2.0/bmt/translate?client_id=y19KVwP77bm7XDrBQFHBTqS6&q=" + src + "&from=auto&to=auto&callback=?", function(data) {
-					//Parse json dictionary
-					$.each(data.trans_result, function(i, item) {
-						$('#translate' + (i + flag + 1)).text(item['dst']);
+						$('#translate' + (flag + i + 1)).text(dest);
 					});
 				});
+				
 			});
 
 			//Hidden function content
@@ -97,6 +95,5 @@
 	</script>
 
 
-
-
-</body></html>
+</body>
+</html>
