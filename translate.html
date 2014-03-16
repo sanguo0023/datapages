@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="公益数据项目">
+	<meta name="author" content="Yufei-Li">
+    <link rel="stylesheet" href="%E5%85%AC%E7%9B%8A%E6%95%B0%E6%8D%AE%E9%A1%B9%E7%9B%AE--%E8%AF%91%E8%80%85%E5%B7%A5%E5%85%B7_files/bootstrap.css">
+    <title>公益数据项目--译者工具</title>
+		 
+</head>
+<body>
+    
+<div class="container">
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h1>译者工具</h1>
+			<h2><small>公益数据项目</small></h2>
+		</div>
+		<div class="panel-body">
+			<!--button id="download_xls" class="btn btn-primary">下载表格</button-->
+			<!--button id="download_json" class="btn btn-primary">下载结构化数据</button-->
+		</div>
+	</div>
+
+	<table id="table" class="table">
+	<thead>
+		<tr><th>id</th>
+		<th>word</th>
+		<th>translate</th>
+	</tr></thead>
+	<tbody id="src">
+
+	<tr><td>1</td><td id="word1"><input></td><td id="translate1"></td></tr></tbody>
+	</table>
+
+	<button id="add" class="btn btn-primary">Add</button>
+	<button id="submit" class="btn btn-success">Submit</button>
+	<button id="print" class="btn">Print</button>
+	<button style="display: none;" id="ok" class="btn btn-primary" type="hidden">OK</button>
+</div>
+
+
+
+	<!--Javascript代码引入-->
+	<script src="%E5%85%AC%E7%9B%8A%E6%95%B0%E6%8D%AE%E9%A1%B9%E7%9B%AE--%E8%AF%91%E8%80%85%E5%B7%A5%E5%85%B7_files/jquery.js"></script>
+	<script src="%E5%85%AC%E7%9B%8A%E6%95%B0%E6%8D%AE%E9%A1%B9%E7%9B%AE--%E8%AF%91%E8%80%85%E5%B7%A5%E5%85%B7_files/bootstrap.js"></script>
+
+    
+	<script type="text/javascript">
+		$(document).ready( function() {
+			count = 1;
+			flag = 0;	
+
+			//Init table
+			for (i = 1; i <= count; i ++)
+				$('#src').append('<tr><td>' + i + '</td><td id="word' + i + '"><input /></td><td id="translate' + i + '"></td></tr>');
+
+			//allocation of new table block
+			$('#add').click( function() {
+				count ++;
+				$('#src').append('<tr><td>' + count + '</td><td id="word' + count + '"><input /></td><td id="translate' + count + '"></td></tr>');
+			});
+
+			//Translation!!
+			$('#submit').click( function() {
+				src = "";
+
+				$('td input').each( function() {
+					if ($(this).val() != "")
+						src = src + $(this).val() + "%0A";
+					else
+						src = src + "null" + "%0A";
+				});
+				
+				$.getJSON("http://openapi.baidu.com/public/2.0/bmt/translate?client_id=y19KVwP77bm7XDrBQFHBTqS6&q=" + src + "&from=auto&to=auto&callback=?", function(data) {
+					//Parse json dictionary
+					$.each(data.trans_result, function(i, item) {
+						$('#translate' + (i + flag + 1)).text(item['dst']);
+					});
+				});
+			});
+
+			//Hidden function content
+			$('#ok').hide();
+			$('#print').click( function() {
+				$('.panel, #add, #submit, #ok, input').slideToggle('slow', function () {
+					$('input').each( function() {
+						$(this).parent().text($(this).val());	//Remove input tag
+					});
+					flag = count;	//Count flag
+				});
+				$('#ok').click( function() { $('button').hide('slow'); });
+			});
+		});
+	</script>
+
+
+
+
+</body></html>
